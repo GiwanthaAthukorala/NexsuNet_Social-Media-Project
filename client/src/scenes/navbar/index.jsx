@@ -25,6 +25,7 @@ import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 
+
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
@@ -44,6 +45,13 @@ const Navbar = () => {
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
+      <img
+        width="50"
+        height="50"
+        alt="nexusnetlogo"
+        src="http://localhost:3001/assets/nuexusnet.png"
+        style={{ borderRadius: "0", margin: "0" }}
+      />
         <Typography
           fontWeight="bold"
           fontSize="clamp(2rem, 2rem, 2.25rem)"
