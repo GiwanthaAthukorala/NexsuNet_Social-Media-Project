@@ -232,7 +232,7 @@ const Form = () => {
             />
           </Box>
 
-          {/* BUTTONS */}
+         
           <Box>
             <Button
               fullWidth
@@ -240,7 +240,7 @@ const Form = () => {
               sx={{
                 m: "2rem 0",
                 p: "1rem",
-                backgroundColor: palette.primary.main,
+                backgroundColor: "#72a0ad",
                 color: palette.background.alt,
                 "&:hover": { color: palette.primary.main },
               }}
