@@ -31,7 +31,7 @@ const AdvertWidget = () => {
         Your pathway to stunning and immaculate beauty and made sure your skin
         is exfoliating skin and shining like light.
       </Typography>
-    </WidgetWrapper>
+    </WidgetWrapper> 
   );
 };
 
