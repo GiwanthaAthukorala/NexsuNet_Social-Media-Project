@@ -18,7 +18,7 @@ const PostWidget = ({
   name,
   description,
   location,
-  picturePath,
+  picturePath, 
   userPicturePath,
   likes,
   comments,
