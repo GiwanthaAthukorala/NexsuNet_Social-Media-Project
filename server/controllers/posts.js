@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Comments from "../models/commentModel.js";
 
 /* CREATE */
 export const createPost = async (req, res) => {
@@ -69,5 +70,31 @@ export const likePost = async (req, res) => {
     res.status(200).json(updatedPost);
   } catch (err) {
     res.status(404).json({ message: err.message });
+  }
+};
+
+export const getComments = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+
+    const postComments = await Comments.find({ postId })
+      .populate({
+        path: "userId",
+        select: "firstName lastName location picturePath userPicturePath",
+      })
+      .populate({
+        path: "replies.userId",
+        select: "firstName lastName location picturePath userPicturePath",
+      })
+      .sort({ _id: -1 });
+
+    res.status(200).json({
+      sucess: true,
+      message: "Successfull Comment",
+      date: postComments,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
   }
 };
