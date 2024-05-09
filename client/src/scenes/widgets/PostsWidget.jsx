@@ -44,7 +44,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           _id,
           userId,
           firstName,
-          lastName,
+          lastName,  
           description,
           location,
           picturePath,
