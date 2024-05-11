@@ -62,5 +62,40 @@ export const addRemoveFriend = async (req, res) => {
   }
 };
 
+/* UPDATE */
+export const editUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      picturePath,
+      location,
+      occupation,
+    } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        firstName,
+        lastName,
+        email,
+        password,
+        picturePath,
+        location,
+        occupation,
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 /*DELETE*/
+
 export const deleteAccount = (req, res) => {};

@@ -72,7 +72,7 @@ export const likePost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
-
+/*Comment Create*/
 export const getComments = async (req, res, next) => {
   try {
     const { postId } = req.params;
@@ -96,5 +96,42 @@ export const getComments = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(404).json({ message: error.message });
+  }
+};
+
+/* DELETE */
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedPost = await Post.findByIdAndDelete(id);
+
+    if (!deletedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/*EDIT*/
+export const editPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      { description },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

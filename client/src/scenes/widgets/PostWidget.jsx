@@ -36,8 +36,6 @@ const PostWidget = ({
 
   const [isEditing, setIsEditing] = useState(false); 
   const [editedDescription, setEditedDescription] = useState(description); 
-  const [editedPicture, setEditedPicture] = useState(null);
-
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
@@ -90,24 +88,19 @@ const PostWidget = ({
 
   const saveEditedPost = async () => {
     try {
-      const formData = new FormData();
-      formData.append("description", editedDescription);
-      if (editedPicture) {
-        formData.append("picture", editedPicture);
-      }
-
       const response = await fetch(`http://localhost:3001/posts/${postId}/edit`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify({ description: editedDescription }),
       });
-
       if (response.ok) {
         console.log("Post Edited Successfully");
         toast.success("Post Edited Successfully");
         setIsEditing(false);
+        // Optionally, you can update the state or reload the posts after editing
       } else {
         console.error("Failed to edit post");
         toast.error("Failed to edit post");
@@ -117,10 +110,7 @@ const PostWidget = ({
       toast.error("Error editing post");
     }
   };
-
-  const handlePictureChange = (event) => {
-    setEditedPicture(event.target.files[0]);
-  };
+  
 
 
  
@@ -133,13 +123,12 @@ const PostWidget = ({
         subtitle={location}
         userPicturePath={userPicturePath}
       />   
-     {isEditing ? (
+       {isEditing ? (
         <Box>
           <textarea
             value={editedDescription}
             onChange={(e) => setEditedDescription(e.target.value)}
           />
-          <input type="file" onChange={handlePictureChange} />
           <IconButton onClick={saveEditedPost}>
             <CheckOutlined />
           </IconButton>
