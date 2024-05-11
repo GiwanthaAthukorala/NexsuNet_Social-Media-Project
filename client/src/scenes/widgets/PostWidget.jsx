@@ -2,7 +2,9 @@ import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
-  ShareOutlined,
+  DeleteOutline,
+  EditOutlined,
+  CheckOutlined
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -11,6 +13,8 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const PostWidget = ({
   postId,
@@ -30,9 +34,15 @@ const PostWidget = ({
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
 
+  const [isEditing, setIsEditing] = useState(false); 
+  const [editedDescription, setEditedDescription] = useState(description); 
+  const [editedPicture, setEditedPicture] = useState(null);
+
+
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
+  
 
   const patchLike = async () => {
     const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
@@ -47,6 +57,74 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  const deletePost = async () => {
+    try {
+     
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        console.log("Post Deleted Successfully");
+        toast.success("Post Deleted Successfull");
+
+          // Reload the page to fetch the updated list of posts
+        window.location.reload();
+
+      } else {
+        console.error("Failed to delete post");
+        toast.error("Failed to delete post");
+
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error deleting post");
+    }
+  };
+
+  const editPost = () => {
+    setIsEditing(true);
+  };
+
+  const saveEditedPost = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("description", editedDescription);
+      if (editedPicture) {
+        formData.append("picture", editedPicture);
+      }
+
+      const response = await fetch(`http://localhost:3001/posts/${postId}/edit`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("Post Edited Successfully");
+        toast.success("Post Edited Successfully");
+        setIsEditing(false);
+      } else {
+        console.error("Failed to edit post");
+        toast.error("Failed to edit post");
+      }
+    } catch (error) {
+      console.error("Error editing post:", error);
+      toast.error("Error editing post");
+    }
+  };
+
+  const handlePictureChange = (event) => {
+    setEditedPicture(event.target.files[0]);
+  };
+
+
+ 
+
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
@@ -54,10 +132,23 @@ const PostWidget = ({
         name={name}
         subtitle={location}
         userPicturePath={userPicturePath}
-      />
-      <Typography color={main} sx={{ mt: "1rem" }}>
-        {description}
-      </Typography>
+      />   
+     {isEditing ? (
+        <Box>
+          <textarea
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+          />
+          <input type="file" onChange={handlePictureChange} />
+          <IconButton onClick={saveEditedPost}>
+            <CheckOutlined />
+          </IconButton>
+        </Box>
+      ) : (
+        <Typography color={main} sx={{ mt: "1rem" }}>
+          {description}
+        </Typography>
+      )}
       {picturePath && (
         <img
           width="100%"
@@ -88,9 +179,15 @@ const PostWidget = ({
           </FlexBetween>
         </FlexBetween>
 
-        <IconButton>
-          <ShareOutlined />
+        <IconButton onClick={editPost}>
+          <EditOutlined />
         </IconButton>
+
+        
+        <IconButton onClick={deletePost}>
+          <DeleteOutline />
+        </IconButton>
+        
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
@@ -105,6 +202,7 @@ const PostWidget = ({
           <Divider />
         </Box>
       )}
+       <ToastContainer />
     </WidgetWrapper>
   );
 };

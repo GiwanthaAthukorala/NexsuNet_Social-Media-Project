@@ -24,6 +24,9 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+
+
+
 //import { VideoLibraryOutlined } from "@mui/icons-material";
 
 const MyPostWidget = ({ picturePath }) => {
@@ -32,12 +35,22 @@ const MyPostWidget = ({ picturePath }) => {
   const [image, setImage] = useState(null);
   const [videoFile,setVideoFile] = useState(null);
   const [post, setPost] = useState("");
-  const { palette } = useTheme();
+   const { palette } = useTheme();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
+
+
+  /*const handleDelete = async (_id) => {
+    await deletePost(_id,user.token);
+    await fetchPost()
+  }*/
+
+
+
+
 
   const handlePost = async () => {
     const formData = new FormData();
