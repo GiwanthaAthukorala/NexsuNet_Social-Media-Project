@@ -38,13 +38,11 @@ const ProfilePage = () => {
 
   useEffect(() => { 
     getUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [getUser]); 
   if (!user) return null;
 
   const handleOpenEdit = () => {
     setIsEditOpen(true);
-    // Fetch user data when edit form is opened
     getUser();
   };
 
@@ -86,7 +84,7 @@ const ProfilePage = () => {
 
   return (
     <Box>
-      <Navbar />
+      <Navbar user={user}  />
       <Box
         width="100%"
         padding="2rem 6%"
@@ -98,9 +96,7 @@ const ProfilePage = () => {
           <UserWidget userId={userId} picturePath={user.picturePath} />
           <Box m="2rem 0" />
           <FriendListWidget userId={userId} />
-          <IconButton onClick={handleOpenEdit}>
-        <EditOutlined />
-      </IconButton>
+         
         </Box>
         <Box
           flexBasis={isNonMobileScreens ? "42%" : undefined}
@@ -109,9 +105,12 @@ const ProfilePage = () => {
           <MyPostWidget picturePath={user.picturePath} />
           <Box m="2rem 0" />
           <PostsWidget userId={userId} isProfile />
+          <IconButton >
+        <EditOutlined onClick={handleOpenEdit} />
+      </IconButton>
         
         <Dialog open={isEditOpen} onClose={handleCloseEdit}>
-        <DialogTitle>Edit Profile</DialogTitle>
+        <DialogTitle>Update Profile</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <TextField

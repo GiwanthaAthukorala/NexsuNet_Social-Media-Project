@@ -11,6 +11,8 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
 
 const UserWidget = ({ userId, picturePath }) => {
   const [user, setUser] = useState(null);
@@ -20,6 +22,15 @@ const UserWidget = ({ userId, picturePath }) => {
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    location: "",
+    occupation: "",
+  });
 
   const getUser = async () => {
     const response = await fetch(`http://localhost:3001/users/${userId}`, {
@@ -33,6 +44,49 @@ const UserWidget = ({ userId, picturePath }) => {
   useEffect(() => {
     getUser();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleOpenEdit = () => {
+    setIsEditOpen(true);
+    getUser();
+  };
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+  };
+
+  // Function to handle form field changes
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Function to handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Make API call to update user profile with formData
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        // Optionally, you can fetch user data again to reflect the updated profile
+        getUser();
+        // Close the edit form after successful submission
+        handleCloseEdit();
+      } else {
+        console.error("Failed to update user profile");
+        toast.success("Update Your Account Successfully");
+      }
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+    
+      toast.success("Error...!! Not Update Your Account")
+    }
+  };
+
 
   if (!user) {
     return null;
@@ -75,7 +129,75 @@ const UserWidget = ({ userId, picturePath }) => {
             <Typography color={medium}>{friends.length} friends</Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined  />
+        <IconButton >
+        <ManageAccountsOutlined  onClick={handleOpenEdit}  />
+      </IconButton>
+        
+
+
+
+
+        <Dialog open={isEditOpen} onClose={handleCloseEdit}>
+        <DialogTitle>Update Profile</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              name="firstName"
+              label="First Name"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="lastName"
+              label="Last Name"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="email"
+              label="Email"
+              value={formData.email}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="password"
+              label="Password"
+              value={formData.password}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              type="password"
+            />
+            <TextField
+              name="location"
+              label="Location"
+              value={formData.location}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="occupation"
+              label="Occupation"
+              value={formData.occupation}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEdit}>Cancel</Button>
+          <Button onClick={handleSubmit} color="primary">Save</Button>
+          <ToastContainer/>
+        </DialogActions>
+      </Dialog>
       </FlexBetween>
 
       <Divider />
